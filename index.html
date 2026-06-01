@@ -750,15 +750,15 @@ function VisitPage() {
           alt="Bread Line storefront"
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 60%' }}
         />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,13,6,0.55) 0%, rgba(18,13,6,0.25) 40%, rgba(18,13,6,0.75) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,13,6,0.35) 0%, rgba(18,13,6,0.45) 40%, rgba(18,13,6,0.92) 75%, rgba(18,13,6,0.97) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', padding: '0 24px 48px', textAlign: 'center' }}>
-          <Eyebrow style={{ marginBottom: 16 }}>Find Us</Eyebrow>
-          <h1 style={{ fontFamily: serif, fontSize: 'clamp(2.75rem,6vw,3.75rem)', color: C.cream, marginBottom: 12 }}>Visit Us</h1>
-          <p style={{ fontFamily: sans, color: C.cream65, fontSize: 14, marginBottom: 20 }}>356 Elizabeth Street, North Hobart TAS 7000</p>
+          <Eyebrow style={{ marginBottom: 16, textShadow: '0 1px 8px rgba(0,0,0,0.8)' }}>Find Us</Eyebrow>
+          <h1 style={{ fontFamily: serif, fontSize: 'clamp(2.75rem,6vw,3.75rem)', color: C.cream, marginBottom: 12, textShadow: '0 2px 16px rgba(0,0,0,0.7)' }}>Visit Us</h1>
+          <p style={{ fontFamily: sans, color: C.cream, fontSize: 14, marginBottom: 20, textShadow: '0 1px 8px rgba(0,0,0,0.8)', opacity: 0.85 }}>356 Elizabeth Street, North Hobart TAS 7000</p>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 999, fontFamily: sans, fontSize: 12, letterSpacing: '0.05em',
-            border: `1px solid ${status.open ? 'rgba(46,160,67,0.4)' : 'rgba(201,122,47,0.25)'}`, background: status.open ? 'rgba(46,160,67,0.12)' : 'rgba(201,122,47,0.1)', backdropFilter: 'blur(6px)' }}>
+            border: `1px solid ${status.open ? 'rgba(46,160,67,0.6)' : 'rgba(201,122,47,0.4)'}`, background: status.open ? 'rgba(46,160,67,0.18)' : 'rgba(201,122,47,0.15)', backdropFilter: 'blur(8px)' }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: status.open ? C.open : C.clay }} />
-            <span style={{ color: status.open ? C.open : C.clay }}>{status.label}</span>
+            <span style={{ color: status.open ? '#4ade80' : C.clay, fontWeight: 500 }}>{status.label}</span>
           </div>
         </div>
       </div>
