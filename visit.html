@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visit Us — Bread Line</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@1,800;1,900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { background:#120d06; color:#f0e6d2; font-family:'DM Sans',sans-serif; -webkit-font-smoothing:antialiased; }
+  ::selection { background:rgba(201,122,47,0.4); color:#f0e6d2; }
+  .bl-desktop-nav { display:none; } .bl-mobile-toggle { display:inline-flex; }
+  @media(min-width:768px){ .bl-desktop-nav{display:flex;} .bl-mobile-toggle{display:none;} }
+  img { display:block; }
+  ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:#0d0904;}
+  ::-webkit-scrollbar-thumb{background:rgba(201,122,47,0.3);border-radius:3px;}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(201,122,47,0.5);}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script type="text/babel" src="bl-shared.js"></script>
+<script type="text/babel">
+
+const VISIT_HOURS = [
+  { day:'Monday',    hours:'Closed',            closed:true },
+  { day:'Tuesday',   hours:'8:00 AM – 3:00 PM' },
+  { day:'Wednesday', hours:'8:00 AM – 3:00 PM' },
+  { day:'Thursday',  hours:'8:00 AM – 3:00 PM' },
+  { day:'Friday',    hours:'8:00 AM – 3:00 PM' },
+  { day:'Saturday',  hours:'8:00 AM – 3:30 PM' },
+  { day:'Sunday',    hours:'8:30 AM – 3:00 PM' },
+];
+
+const MAPS_URL   = 'https://maps.app.goo.gl/XqxxGN3CnCmFWaFo9';
+const MAPS_EMBED = 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2923.939049518577!2d147.31637849999998!3d-42.8741306!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xaa6e752e6194a341%3A0x4e005d26e775b890!2sBread%20Line!5e0!3m2!1sen!2sau!4v1780283018409!5m2!1sen!2sau';
+
+function panel(extra = {}) {
+  return { padding:32, background:C.raised, border:`1px solid ${C.b18}`, borderRadius:16, ...extra };
+}
+
+function parseTime(str) {
+  const [time, period] = str.trim().split(' ');
+  const [h, m] = time.split(':').map(Number);
+  let hours = h;
+  if (period === 'PM' && h !== 12) hours += 12;
+  if (period === 'AM' && h === 12) hours = 0;
+  return hours * 60 + m;
+}
+
+function getLiveStatus() {
+  const hobart = new Date(new Date().toLocaleString('en-AU', { timeZone:'Australia/Hobart' }));
+  const day = hobart.getDay();
+  const todayIdx = day === 0 ? 6 : day - 1;
+  const today = VISIT_HOURS[todayIdx];
+  const nowMins = hobart.getHours() * 60 + hobart.getMinutes();
+  if (today.closed) return { open:false, label:'Closed today', todayIdx };
+  const [openStr, closeStr] = today.hours.split(' – ');
+  const openMins = parseTime(openStr), closeMins = parseTime(closeStr);
+  if (nowMins < openMins) return { open:false, label:`Opens at ${openStr}`, todayIdx };
+  if (nowMins >= closeMins) return { open:false, label:'Closed now', todayIdx };
+  const remaining = closeMins - nowMins;
+  const h = Math.floor(remaining / 60), m = remaining % 60;
+  return { open:true, label:`Open · closes in ${h > 0 ? `${h}h ${m}m` : `${m}m`}`, todayIdx };
+}
+
+function VisitPage() {
+  const [status, setStatus] = useState(getLiveStatus);
+  const todayIdx = status.todayIdx;
+  useEffect(() => { const id = setInterval(() => setStatus(getLiveStatus()), 60000); return () => clearInterval(id); }, []);
+  useEffect(() => { if (window.lucide?.createIcons) window.lucide.createIcons({ attrs:{ width:'100%', height:'100%' } }); });
+
+  return (
+    <div>
+      {/* Storefront hero */}
+      <div style={{ position:'relative', height:420, overflow:'hidden', marginTop:-73 }}>
+        <img src="storefront.jpg" alt="Bread Line storefront" style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 60%' }} />
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg,rgba(18,13,6,0.35) 0%,rgba(18,13,6,0.45) 40%,rgba(18,13,6,0.92) 75%,rgba(18,13,6,0.97) 100%)' }} />
+        <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', padding:'0 24px 48px', textAlign:'center' }}>
+          <Eyebrow style={{ marginBottom:16, textShadow:'0 1px 8px rgba(0,0,0,0.8)' }}>Find Us</Eyebrow>
+          <h1 style={{ fontFamily:serif, fontSize:'clamp(2.75rem,6vw,3.75rem)', color:C.cream, marginBottom:12, textShadow:'0 2px 16px rgba(0,0,0,0.7)' }}>Visit Us</h1>
+          <p style={{ fontFamily:sans, color:C.cream, fontSize:14, marginBottom:20, textShadow:'0 1px 8px rgba(0,0,0,0.8)', opacity:0.85 }}>356 Elizabeth Street, North Hobart TAS 7000</p>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'8px 16px', borderRadius:999, fontFamily:sans, fontSize:12, letterSpacing:'0.05em',
+            border:`1px solid ${status.open ? 'rgba(46,160,67,0.6)' : 'rgba(201,122,47,0.4)'}`, background: status.open ? 'rgba(46,160,67,0.18)' : 'rgba(201,122,47,0.15)', backdropFilter:'blur(8px)' }}>
+            <span style={{ width:6, height:6, borderRadius:'50%', background: status.open ? C.open : C.clay }} />
+            <span style={{ color: status.open ? '#4ade80' : C.clay, fontWeight:500 }}>{status.label}</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth:1024, margin:'0 auto', padding:'80px 24px' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(320px,1fr))', gap:48 }}>
+          {/* Map */}
+          <div>
+            <div style={{ position:'relative', overflow:'hidden', aspectRatio:'4/3', background:C.raised, border:`1px solid ${C.b18}`, borderRadius:16 }}>
+              <iframe title="Bread Line on Google Maps" src={MAPS_EMBED}
+                style={{ width:'100%', height:'100%', border:0, borderRadius:16, filter:'saturate(0.85) contrast(0.95)' }}
+                allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+              <a href={MAPS_URL} target="_blank" rel="noopener noreferrer"
+                style={{ position:'absolute', bottom:16, right:16, display:'inline-flex', alignItems:'center', gap:8, color:C.cream, fontFamily:sans, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', textDecoration:'none', padding:'11px 20px', borderRadius:999, background:'rgba(18,13,6,0.92)', border:`1px solid ${C.terracotta}`, backdropFilter:'blur(4px)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = C.terracotta; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(18,13,6,0.92)'; }}>
+                Open in Maps <Icon name="arrow-up-right" size={13} color={C.cream} />
+              </a>
+            </div>
+            <div style={{ marginTop:24, ...panel({ padding:24 }) }}>
+              <h3 style={{ fontFamily:serif, fontSize:18, color:C.cream, marginBottom:16 }}>Getting There</h3>
+              {[
+                'Located on Elizabeth Street in North Hobart, easily accessible from the CBD.',
+                'Street parking available along Elizabeth Street and surrounding roads.',
+                'Approximately 8 minutes by car from Hobart CBD.',
+              ].map((t, i) => (
+                <div key={i} style={{ display:'flex', gap:12, fontFamily:sans, fontSize:14, color:C.clay, marginBottom:12 }}>
+                  <span style={{ color:C.terracotta }}>→</span><p>{t}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Info */}
+          <div style={{ display:'flex', flexDirection:'column', gap:32 }}>
+            <div style={panel()}>
+              <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:24 }}>
+                <Icon name="clock" size={16} color={C.terracotta} />
+                <h2 style={{ fontFamily:serif, fontSize:20, color:C.cream }}>Opening Hours</h2>
+              </div>
+              {VISIT_HOURS.map((item, i) => {
+                const isToday = i === todayIdx;
+                return (
+                  <div key={item.day} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', margin: isToday ? '0 -8px' : 0, borderRadius: isToday ? 10 : 0,
+                    borderBottom: i < VISIT_HOURS.length - 1 && !isToday ? `1px solid ${C.b08}` : 'none',
+                    background: isToday ? 'rgba(201,122,47,0.06)' : 'transparent' }}>
+                    <span style={{ fontFamily:sans, fontSize:14, color: item.closed ? 'rgba(154,133,110,0.4)' : isToday ? C.terracotta : C.clay }}>
+                      {item.day}{isToday && <span style={{ color:C.terracotta, fontSize:12 }}> · today</span>}
+                    </span>
+                    <span style={{ fontFamily:sans, fontSize:14, color: item.closed ? 'rgba(154,133,110,0.4)' : isToday ? C.cream : 'rgba(240,230,210,0.7)' }}>{item.hours}</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={panel()}>
+              <h2 style={{ fontFamily:serif, fontSize:20, color:C.cream, marginBottom:24 }}>Service Options</h2>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+                {[['Dine In','🪑'],['Takeaway','🥡'],['Delivery','🛵'],['Kids Menu','👶'],['Vegan Options','🌿'],['Halal','✦']].map(([l,e]) => (
+                  <div key={l} style={{ display:'flex', alignItems:'center', gap:12, padding:'12px 16px', borderRadius:12, fontFamily:sans, fontSize:14, color:C.clay, border:'1px solid rgba(201,122,47,0.1)' }}>
+                    <span>{e}</span>{l}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <PageShell alwaysScrolled><VisitPage /></PageShell>
+);
+</script>
+</body>
+</html>
