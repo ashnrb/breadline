@@ -15,8 +15,165 @@
   ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:#0d0904;}
   ::-webkit-scrollbar-thumb{background:rgba(201,122,47,0.3);border-radius:3px;}
   ::-webkit-scrollbar-thumb:hover{background:rgba(201,122,47,0.5);}
+
   @keyframes spin { to { transform:rotate(360deg); } }
   .bl-spinner { width:32px; height:32px; border:2px solid rgba(201,122,47,0.2); border-top-color:#c97a2f; border-radius:50%; animation:spin 0.8s linear infinite; }
+
+  /* Tile grid */
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  /* Card */
+  .menu-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #1c1509;
+    border: 1px solid rgba(201,122,47,0.14);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: default;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,122,47,0.3);
+    border-color: rgba(201,122,47,0.3);
+  }
+
+  /* Emoji banner */
+  .menu-card-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    background: linear-gradient(135deg, #1c1509 0%, #2a1a0a 100%);
+    font-size: 48px;
+    border-bottom: 1px solid rgba(201,122,47,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .menu-card-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 120%, rgba(201,122,47,0.12) 0%, transparent 70%);
+  }
+
+  /* Popular badge */
+  .badge-popular {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 3px 8px;
+    background: rgba(201,122,47,0.18);
+    border: 1px solid rgba(201,122,47,0.5);
+    border-radius: 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #e8a84b;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Card body */
+  .menu-card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px 20px 20px;
+    gap: 10px;
+  }
+
+  /* Title row */
+  .menu-card-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .menu-card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: #f0e6d2;
+    line-height: 1.25;
+    flex: 1;
+  }
+  .menu-card-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: #c97a2f;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Divider */
+  .menu-card-divider {
+    height: 1px;
+    background: rgba(201,122,47,0.1);
+  }
+
+  /* Ingredients */
+  .menu-card-ingredients {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: #9a856e;
+    line-height: 1.55;
+    flex: 1;
+  }
+  .menu-card-ingredients-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(154,133,110,0.55);
+    margin-bottom: 4px;
+  }
+
+  /* Tags row */
+  .menu-card-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: auto;
+  }
+  .tag-vegan       { background:#1e4030; border:1px solid #2d6a4f; color:#4ade80; }
+  .tag-vegetarian  { background:#1a3030; border:1px solid #52796f; color:#6ee7b7; }
+  .tag-halal       { background:rgba(201,122,47,0.1); border:1px solid rgba(201,122,47,0.3); color:#e8a84b; }
+  .menu-tag {
+    font-size: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+
+  /* Empty desc placeholder */
+  .menu-card-no-desc {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    color: rgba(154,133,110,0.3);
+    font-style: italic;
+  }
+
+  @media (max-width: 480px) {
+    .menu-grid { grid-template-columns: 1fr 1fr; gap:12px; }
+    .menu-card-banner { height: 72px; font-size: 36px; }
+    .menu-card-body { padding: 12px 14px 14px; }
+    .menu-card-title { font-size: 13px; }
+    .menu-card-price { font-size: 13px; }
+  }
+  @media (max-width: 340px) {
+    .menu-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -28,24 +185,57 @@
 <script type="text/babel" src="bl-shared.js"></script>
 <script type="text/babel">
 
-const TAG_COLOR = { vegan:'#2d6a4f', vegetarian:'#52796f' };
-const TAG_LABEL = { vegan:'VG', vegetarian:'V' };
+// Items marked as crowd favourites (matched by name substring)
+const POPULAR_ITEMS = [
+  "za'atar", "cheese manoush", "falafel foldover", "labneh",
+  "bbq chicken", "meat lovers", "baklava", "acai", "iced latte", "nutella"
+];
 
-function MenuRow({ item }) {
-  const [h, setH] = useState(false);
+function isPopular(name) {
+  const n = name.toLowerCase();
+  return POPULAR_ITEMS.some(p => n.includes(p));
+}
+
+function MenuTile({ item, categoryIcon }) {
+  const popular = isPopular(item.name);
+  const hasDesc = item.desc && item.desc.trim().length > 0;
+
   return (
-    <div onMouseEnter={() => setH(true)} onMouseLeave={() => setH(false)}
-      style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:24, padding:'16px 0', borderBottom:`1px solid ${C.b08}` }}>
-      <div style={{ flex:1, minWidth:0 }}>
-        <div style={{ display:'flex', flexWrap:'wrap', alignItems:'center', gap:8, marginBottom:2 }}>
-          <span style={{ fontFamily:sans, color: h ? C.terracotta : C.cream, fontSize:14, transition:'color .2s' }}>{item.name}</span>
-          {item.tags.map(t => (
-            <span key={t} style={{ fontSize:10, padding:'2px 6px', letterSpacing:'0.12em', textTransform:'uppercase', background:TAG_COLOR[t], color:C.cream, opacity:0.9 }}>{TAG_LABEL[t]}</span>
-          ))}
-        </div>
-        {item.desc && <p style={{ fontFamily:sans, fontSize:12, color:C.clay, lineHeight:1.5 }}>{item.desc}</p>}
+    <div className="menu-card">
+      {/* Emoji banner */}
+      <div className="menu-card-banner">
+        <span style={{ position:'relative', zIndex:1 }}>{categoryIcon}</span>
+        {popular && <span className="badge-popular">⭐ Popular</span>}
       </div>
-      <span style={{ fontFamily:serif, color:C.terracotta, fontSize:14, fontVariantNumeric:'tabular-nums', flexShrink:0 }}>${item.price.toFixed(2)}</span>
+
+      {/* Body */}
+      <div className="menu-card-body">
+
+        {/* Title + Price */}
+        <div className="menu-card-title-row">
+          <span className="menu-card-title">{item.name}</span>
+          <span className="menu-card-price">${item.price.toFixed(2)}</span>
+        </div>
+
+        <div className="menu-card-divider" />
+
+        {/* Ingredients / description */}
+        <div>
+          <p className="menu-card-ingredients-label">Ingredients</p>
+          {hasDesc
+            ? <p className="menu-card-ingredients">{item.desc}</p>
+            : <p className="menu-card-no-desc">Freshly made to order</p>
+          }
+        </div>
+
+        {/* Tags */}
+        <div className="menu-card-footer">
+          {item.tags.includes('vegan')       && <span className="menu-tag tag-vegan">Vegan</span>}
+          {item.tags.includes('vegetarian')  && <span className="menu-tag tag-vegetarian">Vegetarian</span>}
+          <span className="menu-tag tag-halal">Halal</span>
+        </div>
+
+      </div>
     </div>
   );
 }
@@ -58,31 +248,38 @@ function MenuPage() {
   const tabs = menuData
     ? [{ id:'all', icon:'✦', label:'All' }, ...menuData.map(c => ({ id:c.id, icon:c.icon, label:c.label }))]
     : [{ id:'all', icon:'✦', label:'All' }];
-  const visible = menuData ? (active === 'all' ? menuData : menuData.filter(c => c.id === active)) : [];
+
+  const visible = menuData
+    ? (active === 'all' ? menuData : menuData.filter(c => c.id === active))
+    : [];
 
   return (
     <div>
-      {/* Hero */}
+      {/* ── Hero ── */}
       <div style={{ position:'relative', height:400, overflow:'hidden', marginTop:-73 }}>
-        <img src="menu-hero.jpg" alt="Bread Line menu" style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 40%' }} />
+        <img src="menu-hero.jpg" alt="Bread Line menu"
+          style={{ width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 40%' }} />
         <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg,rgba(18,13,6,0.45) 0%,rgba(18,13,6,0.55) 40%,rgba(18,13,6,0.93) 75%,rgba(18,13,6,0.98) 100%)' }} />
         <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', padding:'0 24px 48px', textAlign:'center' }}>
           <Eyebrow style={{ marginBottom:16, textShadow:'0 1px 8px rgba(0,0,0,0.8)' }}>356 Elizabeth Street, North Hobart</Eyebrow>
           <h1 style={{ fontFamily:serif, fontSize:'clamp(2.75rem,6vw,3.75rem)', color:C.cream, marginBottom:16, textShadow:'0 2px 16px rgba(0,0,0,0.7)' }}>Our Menu</h1>
-          <p style={{ fontFamily:sans, color:C.cream, fontSize:14, lineHeight:1.6, marginBottom:28, maxWidth:480, opacity:0.8, textShadow:'0 1px 8px rgba(0,0,0,0.8)' }}>Everything baked fresh to order. Halal · Vegetarian · Vegan options available.</p>
+          <p style={{ fontFamily:sans, color:C.cream, fontSize:14, lineHeight:1.6, marginBottom:28, maxWidth:480, opacity:0.8, textShadow:'0 1px 8px rgba(0,0,0,0.8)' }}>
+            Everything baked fresh to order. Halal · Vegetarian · Vegan options available.
+          </p>
           <UberBtn>Order on Uber Eats</UberBtn>
         </div>
       </div>
 
-      {/* Category tabs */}
+      {/* ── Category tabs ── */}
       <div style={{ position:'sticky', top:72, zIndex:40, padding:'16px 24px', overflowX:'auto', background:'rgba(18,13,6,0.97)', borderBottom:`1px solid ${C.b15}`, backdropFilter:'blur(8px)' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:'max-content', maxWidth:1152, margin:'0 auto' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:8, minWidth:'max-content', maxWidth:1200, margin:'0 auto' }}>
           {tabs.map(cat => {
             const on = active === cat.id;
             return (
               <button key={cat.id} onClick={() => setActive(cat.id)}
                 style={{ display:'flex', alignItems:'center', gap:8, padding:'10px 20px', fontFamily:sans, fontSize:12, letterSpacing:'0.08em', textTransform:'uppercase', whiteSpace:'nowrap', cursor:'pointer', transition:'all .2s',
-                  background: on ? C.terracotta : 'transparent', color: on ? C.cream : C.clay, border:`1px solid ${on ? C.terracotta : 'rgba(201,122,47,0.2)'}` }}>
+                  background: on ? C.terracotta : 'transparent', color: on ? C.cream : C.clay,
+                  border:`1px solid ${on ? C.terracotta : 'rgba(201,122,47,0.2)'}`, borderRadius:6 }}>
                 <span>{cat.icon}</span>{cat.label}
               </button>
             );
@@ -90,14 +287,18 @@ function MenuPage() {
         </div>
       </div>
 
-      {/* Menu content */}
-      <div style={{ maxWidth:800, margin:'0 auto', padding:'64px 24px' }}>
+      {/* ── Menu tile grid ── */}
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:'56px 24px 80px' }}>
+
+        {/* Loading */}
         {loading && (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:20, padding:'80px 24px', color:C.clay, fontFamily:sans }}>
             <div className="bl-spinner" />
             <p style={{ fontSize:14, letterSpacing:'0.15em', textTransform:'uppercase' }}>Loading menu…</p>
           </div>
         )}
+
+        {/* Error */}
         {!loading && error && (
           <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:16, padding:'80px 24px', textAlign:'center', color:C.clay, fontFamily:sans }}>
             <span style={{ fontSize:32 }}>⚠️</span>
@@ -105,25 +306,38 @@ function MenuPage() {
             <button onClick={reload} style={{ marginTop:8, padding:'10px 24px', fontFamily:sans, fontSize:12, letterSpacing:'0.2em', textTransform:'uppercase', background:'transparent', border:`1px solid ${C.terracotta}`, color:C.terracotta, cursor:'pointer', borderRadius:6 }}>Try Again</button>
           </div>
         )}
+
+        {/* Sections */}
         {!loading && !error && visible.map(category => (
-          <section key={category.id} style={{ marginBottom:64 }}>
-            <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:32 }}>
-              <span style={{ fontSize:24 }}>{category.icon}</span>
-              <h2 style={{ fontFamily:serif, fontSize:'clamp(1.5rem,3vw,1.875rem)', color:C.cream }}>{category.label}</h2>
+          <section key={category.id} style={{ marginBottom:56 }}>
+
+            {/* Section heading */}
+            <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:28 }}>
+              <span style={{ fontSize:22 }}>{category.icon}</span>
+              <h2 style={{ fontFamily:serif, fontSize:'clamp(1.4rem,3vw,1.75rem)', color:C.cream }}>{category.label}</h2>
               <div style={{ flex:1, height:1, background:C.b18 }} />
+              <span style={{ fontFamily:sans, fontSize:12, color:C.clay, opacity:0.6 }}>
+                {category.items.length} item{category.items.length !== 1 ? 's' : ''}
+              </span>
             </div>
-            {category.items.map(item => <MenuRow key={item.name} item={item} />)}
+
+            {/* Tile grid */}
+            <div className="menu-grid">
+              {category.items.map(item => (
+                <MenuTile key={item.name} item={item} categoryIcon={category.icon} />
+              ))}
+            </div>
           </section>
         ))}
+
+        {/* Legend */}
         {!loading && !error && (
-          <div style={{ marginTop:32, paddingTop:32, display:'flex', flexWrap:'wrap', gap:24, borderTop:`1px solid rgba(201,122,47,0.12)`, alignItems:'center' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, color:C.clay, fontFamily:sans }}>
-              <span style={{ padding:'2px 6px', fontSize:10, letterSpacing:'0.12em', background:'#2d6a4f', color:C.cream }}>VG</span> Vegan
-            </div>
-            <div style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, color:C.clay, fontFamily:sans }}>
-              <span style={{ padding:'2px 6px', fontSize:10, letterSpacing:'0.12em', background:'#52796f', color:C.cream }}>V</span> Vegetarian
-            </div>
-            <p style={{ fontFamily:sans, fontSize:12, color:'rgba(154,133,110,0.6)', marginLeft:'auto' }}>All items are halal unless noted otherwise.</p>
+          <div style={{ marginTop:16, paddingTop:32, display:'flex', flexWrap:'wrap', gap:16, borderTop:`1px solid rgba(201,122,47,0.1)`, alignItems:'center' }}>
+            <span className="menu-tag tag-vegan" style={{ borderRadius:4 }}>Vegan</span>
+            <span className="menu-tag tag-vegetarian" style={{ borderRadius:4 }}>Vegetarian</span>
+            <span className="menu-tag tag-halal" style={{ borderRadius:4 }}>Halal</span>
+            <span style={{ fontFamily:sans, fontSize:11, color:'rgba(154,133,110,0.5)', letterSpacing:'0.05em' }}>⭐ Popular — customer favourites</span>
+            <p style={{ fontFamily:sans, fontSize:12, color:'rgba(154,133,110,0.45)', marginLeft:'auto' }}>All items are halal unless noted otherwise.</p>
           </div>
         )}
       </div>
