@@ -67,6 +67,7 @@ function csvToMenuData(rows) {
     const price = parseFloat(row['Price']) || 0;
     const vegan = (row['Vegan'] || '').toLowerCase() === 'yes';
     const veg   = (row['Vegetarian'] || '').toLowerCase() === 'yes';
+    const image = (row['Image'] || '').trim();
     if (!cat || !name) return;
     if (!categoryMap[cat]) {
       categoryMap[cat] = { id: cat.toLowerCase().replace(/\W+/g, '-'), icon, label: cat, items: [] };
@@ -75,7 +76,7 @@ function csvToMenuData(rows) {
     const tags = [];
     if (vegan) tags.push('vegan');
     if (veg)   tags.push('vegetarian');
-    categoryMap[cat].items.push({ name, desc, price, tags });
+    categoryMap[cat].items.push({ name, desc, price, tags, image });
   });
   return categoryOrder.map(k => categoryMap[k]);
 }
