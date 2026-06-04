@@ -44,12 +44,12 @@
     border-color: rgba(201,122,47,0.3);
   }
 
-  /* Emoji banner */
+  /* Image / banner area */
   .menu-card-banner {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100px;
+    height: 160px;
     background: linear-gradient(135deg, #1c1509 0%, #2a1a0a 100%);
     font-size: 48px;
     border-bottom: 1px solid rgba(201,122,47,0.1);
@@ -61,6 +61,52 @@
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 50% 120%, rgba(201,122,47,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  /* Actual food photo */
+  .menu-card-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+  }
+  .menu-card:hover .menu-card-photo {
+    transform: scale(1.06);
+  }
+  /* Branded placeholder (no image) */
+  .menu-card-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    background: linear-gradient(135deg, #1c1509 0%, #2a1a0a 100%);
+  }
+  .menu-card-placeholder-emoji {
+    font-size: 36px;
+    line-height: 1;
+    opacity: 0.7;
+  }
+  .menu-card-placeholder-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    font-style: italic;
+    color: rgba(201,122,47,0.5);
+    text-align: center;
+    line-height: 1.3;
+    max-width: 140px;
+  }
+  /* Subtle bottom gradient over photo so price badge reads cleanly */
+  .menu-card-photo-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 56px;
+    background: linear-gradient(180deg, transparent 0%, rgba(18,13,6,0.7) 100%);
+    pointer-events: none;
   }
 
   /* Popular badge */
@@ -166,7 +212,7 @@
 
   @media (max-width: 480px) {
     .menu-grid { grid-template-columns: 1fr 1fr; gap:12px; }
-    .menu-card-banner { height: 72px; font-size: 36px; }
+    .menu-card-banner { height: 120px; font-size: 36px; }
     .menu-card-body { padding: 12px 14px 14px; }
     .menu-card-title { font-size: 13px; }
     .menu-card-price { font-size: 13px; }
@@ -199,16 +245,37 @@ function isPopular(name) {
 function MenuTile({ item, categoryIcon }) {
   const popular = isPopular(item.name);
   const hasDesc = item.desc && item.desc.trim().length > 0;
+  const hasImage = item.image && item.image.trim().length > 0;
+  const [imgError, setImgError] = useState(false);
+  const showPhoto = hasImage && !imgError;
 
   return (
     <div className="menu-card">
-      {/* Emoji banner */}
+
+      {/* ── Banner: photo OR branded placeholder ── */}
       <div className="menu-card-banner">
-        <span style={{ position:'relative', zIndex:1 }}>{categoryIcon}</span>
-        {popular && <span className="badge-popular">⭐ Popular</span>}
+        {showPhoto ? (
+          <>
+            <img
+              src={item.image}
+              alt={item.name}
+              className="menu-card-photo"
+              onError={() => setImgError(true)}
+            />
+            <div className="menu-card-photo-overlay" />
+          </>
+        ) : (
+          <div className="menu-card-placeholder">
+            <span className="menu-card-placeholder-emoji">{categoryIcon}</span>
+            <span className="menu-card-placeholder-name">{item.name}</span>
+          </div>
+        )}
+        {popular && (
+          <span className="badge-popular" style={{ zIndex:2 }}>⭐ Popular</span>
+        )}
       </div>
 
-      {/* Body */}
+      {/* ── Body ── */}
       <div className="menu-card-body">
 
         {/* Title + Price */}
@@ -219,7 +286,7 @@ function MenuTile({ item, categoryIcon }) {
 
         <div className="menu-card-divider" />
 
-        {/* Ingredients / description */}
+        {/* Ingredients */}
         <div>
           <p className="menu-card-ingredients-label">Ingredients</p>
           {hasDesc
@@ -230,8 +297,8 @@ function MenuTile({ item, categoryIcon }) {
 
         {/* Tags */}
         <div className="menu-card-footer">
-          {item.tags.includes('vegan')       && <span className="menu-tag tag-vegan">Vegan</span>}
-          {item.tags.includes('vegetarian')  && <span className="menu-tag tag-vegetarian">Vegetarian</span>}
+          {item.tags.includes('vegan')      && <span className="menu-tag tag-vegan">Vegan</span>}
+          {item.tags.includes('vegetarian') && <span className="menu-tag tag-vegetarian">Vegetarian</span>}
           <span className="menu-tag tag-halal">Halal</span>
         </div>
 
