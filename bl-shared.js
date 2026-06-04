@@ -12,7 +12,7 @@ const UBER_EATS_URL = 'https://www.ubereats.com/au/store/bread-line/UTw7YZimWVaa
 
 // ─── Nav page detection (reads filename) ─────────────────────
 function getCurrentPage() {
-  const p = window.location.pathname.split('/').pop().replace('.html','');
+  const p = window.location.pathname.split('/').pop().replace(/\/$/, '');
   if (!p || p === 'index') return 'home';
   return p; // 'menu' | 'reviews' | 'visit'
 }
